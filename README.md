@@ -15,7 +15,8 @@ A minimum configuration to demonstrate the features of Kubernetes that I used is
 
 | Item | Use | Example | Quantity |Notes | 
 |------|-----|---------|--------|---|
-| Nodes | Raspberry Pi 4 Model B   | [Amazon Link](https://www.amazon.co.uk/Raspberry-Pi-MODEL-2GB/dp/B07TGBLK33) | 5 |Use a model with 4GB RAM and Quad Core CPU | 
+| Controller | Raspberry Pi 4 Model B   | [Amazon Link](https://www.amazon.co.uk/Raspberry-Pi-MODEL-2GB/dp/B07TGBLK33) | 1 |Any RPi with 4 cores and 1GB RAM+ | 
+| Workers | Raspberry Pi 4 Model B   | [Amazon Link](https://www.amazon.co.uk/Raspberry-Pi-MODEL-2GB/dp/B07TGBLK33) | 4 |Use a model with 4GB RAM and Quad Core CPU | 
 | Power | Anker PowerPort 60 W 6-Port  | [Amazon Link](https://www.amazon.co.uk/Anker-PowerPort-Family-Sized-Technology-Smartphones-Black/dp/B00PK1IIJY)  |  1    |   | 
 | USB Cables | Power to Pi's    | [Amazon Link](https://www.amazon.co.uk/gp/product/B00OOOHPN8) |   1 Pack       | Need 5      | 
 | USB C Adaptors | Power to Pi's    | [Amazon Link](https://www.amazon.co.uk/Anker-Adapter-female-Converts-Resistor/dp/B078NLG53R) |   2 Packs       | Need 5      | 
@@ -40,7 +41,7 @@ Software versions:
 Network:
 
 * Master node: `172.16.1.210 (Host name: kubectl4)`
-* Worker node: `172.16.1.211..213 (Host names: worker41..44)`
+* Worker node: `172.16.1.211..214 (Host names: worker41..44)`
 * Ingress node: `172.16.1.211`
 * Gateway: `172.16.1.1`
 * DNS: `1.1.1.1, 8.8.8.8`
@@ -48,7 +49,6 @@ Network:
 ### Install O/S
 
 * Install Raspbian Buster Lite [Download](https://www.raspberrypi.org/downloads/raspbian/) onto sn SD card and boot
-* Run the config tool (`sudo raspi-config`) and set the `hostname` and enable `ssh`
 * Update networking to set a static IP, Gateway and DNS addresses (IPV4 only for now). `sudo nano /etc/dhcpcd.conf`
 * Disable the swap file
 ```
@@ -56,6 +56,9 @@ sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
 sudo systemctl disable dphys-swapfile
 ```
+* Run the config tool (`sudo raspi-config`),  enable `ssh`and set the `hostname`
+* Reboot (Must do this now due to host name change)
+
 * Install Docker
 ```
 sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
@@ -66,6 +69,8 @@ sudo usermod -aG docker pi
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list 
 ```
+**Note ** No specific Buster release is available at the time of writing.  However, the Xenial version appears to work without issue.
+
 * Update software
 ```
 sudo apt update -qy
@@ -82,11 +87,9 @@ sudo apt upgrade -qy
 
 This gives a basic configuration ready to install Kubernetes on
 
-
 ### Install Kubernetes
 
 ```sudo apt-get install -qy kubeadm```
-* Reboot
 
 <p align="center">
   <img src="images/version.png">

@@ -63,11 +63,12 @@ sudo systemctl disable dphys-swapfile
 ```
 sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
 sudo usermod -aG docker pi
+```
 
 <p align="center">
   <img src="images/docker.png">
 </p>
-```
+
 * Add Kubernetes repository
 ```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
@@ -128,7 +129,6 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```$xslt
 kubeadm token generate
 kubeadm token create <token printed from previous command> --print-join-command --ttl=0
-
 ```
 
 ## Configure Networking

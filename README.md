@@ -2,10 +2,13 @@
 
 This guide covers the construction, installation and use of a Kubernetes Cluster hosted on a set of Raspberry Pi 4 computers.
 
-One I built earlier ...
+Under construction ...
 <p align="center">
-  <img src="images/cluster.png">
+  <img src="images/cluster1.png">
 </p>
+<p align="center">
+      <img src="images/cluster2.png">
+    </p>
 
 ## Hardware
 
@@ -46,7 +49,7 @@ Network:
 
 ### Install O/S
 
-* Install Raspbian Buster Lite [Download](https://www.raspberrypi.org/downloads/raspbian/) onto sn SD card and boot
+* Install Raspbian Buster Lite [Download](https://www.raspberrypi.org/downloads/raspbian/) onto an SD card and boot
 * Update networking to set a static IP, Gateway and DNS addresses (IPV4 only for now). 
 
 `sudo nano /etc/dhcpcd.conf`
@@ -74,7 +77,7 @@ sudo usermod -aG docker pi
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list 
 ```
-**Note ** No specific Buster release is available at the time of writing.  However, the Xenial version appears to work without issue.
+**Note** No specific Buster release is available at the time of writing.  However, the Xenial version appears to work without issue.
 
 * Update software
 ```
@@ -125,7 +128,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-*Note 1:* You can always regenerate the token at a later date by usuing:
+**Note 1:** You can always regenerate the token at a later date by usuing:
 ```$xslt
 kubeadm token generate
 kubeadm token create <token printed from previous command> --print-join-command --ttl=0

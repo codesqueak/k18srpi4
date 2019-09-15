@@ -59,11 +59,6 @@ sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
 sudo systemctl disable dphys-swapfile
 ```
-* Update software
-```
-sudo apt update
-sudo apt upgrade -y
-```
 
 * Run the config tool (`sudo raspi-config`),  set a new password, enable `ssh`and set the `hostname`
 * Reboot (Must do this now due to host name change)
@@ -93,6 +88,12 @@ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/
 ...and add the following options 
 
 ```ipv6.disable=1 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1```
+
+* Update software
+```
+sudo apt update
+sudo apt upgrade -y
+```
 * Reboot
 
 This gives a basic configuration ready to install Kubernetes on

@@ -59,12 +59,18 @@ sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
 sudo systemctl disable dphys-swapfile
 ```
-* Run the config tool (`sudo raspi-config`),  enable `ssh`and set the `hostname`
+* Update software
+```
+sudo apt update
+sudo apt upgrade -y
+```
+
+* Run the config tool (`sudo raspi-config`),  set a new password, enable `ssh`and set the `hostname`
 * Reboot (Must do this now due to host name change)
 
 * Install Docker
 ```
-sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
+sudo curl -sL get.docker.com |  sh
 sudo usermod -aG docker pi
 ```
 
@@ -79,11 +85,7 @@ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/
 ```
 **Note** No specific Buster release is available at the time of writing.  However, the Xenial version appears to work without issue.
 
-* Update software
-```
-sudo apt update -qy
-sudo apt upgrade -qy
-```
+
 * Edit boot configuration 
 
 `sudo nano  /boot/cmdline.txt` 
@@ -97,7 +99,7 @@ This gives a basic configuration ready to install Kubernetes on
 
 ### Install Kubernetes
 
-```sudo apt-get install -qy kubeadm```
+```sudo apt-get install -y kubeadm```
 
 This is now a complete base image which can be used for control and worker nodes.  To save time, make an image copy to all of your SD cards.
 Don't forget to change IP addresses and host names !
@@ -128,7 +130,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-**Note 1:** You can always regenerate the token at a later date by usuing:
+**Note 1:** You can always regenerate the token at a later date by using:
 ```$xslt
 kubeadm token generate
 kubeadm token create <token printed from previous command> --print-join-command --ttl=0
@@ -167,7 +169,7 @@ sudo kubeadm join 172.16.1.210:6443 --token <token here>  --discovery-token-ca-c
 
 The cluster is now complete
 
-
+# *** Here be Dragons ! ***
 # *** Everything Past Here is Untested ***
 
 

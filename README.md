@@ -115,7 +115,7 @@ Select the machine you are going to use as the master node
 
 * Install
 ```
-sudo kubeadm init
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
 
 * Once complete, note the line starting 
@@ -145,6 +145,13 @@ Most guides use [Flannel](https://github.com/coreos/flannel) as the networking l
 ```
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+```
+
+## Flannel
+
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+sudo sysctl net.bridge.bridge-nf-call-iptables=1
 ```
 
 * Show system to confirm install

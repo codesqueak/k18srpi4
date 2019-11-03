@@ -50,7 +50,7 @@ Network:
 ### Install O/S
 
 * Install Raspbian Buster Lite [Download](https://www.raspberrypi.org/downloads/raspbian/) onto an SD card and boot
-* Update networking to set a static IP, Gateway and DNS addresses (IPV4 only for now). 
+* Update networking to set a static IP, Gateway and DNS addresses (IPV4 only for now) by editing this file
 
 `sudo nano /etc/dhcpcd.conf`
 * Disable the swap file
@@ -91,9 +91,16 @@ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/
 
 * Update software
 ```
-sudo apt update
-sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 ```
+
+* Configure network bridge (Not sure this is necessary on later kernels ....)
+
+```sudo sysctl net.bridge.bridge-nf-call-iptables=1```
+ 
+ Check here for order: https://github.com/raynix/ansible-kubeadm/blob/master/roles/kubeadm/tasks/main.yaml
+ 
+ 
 * Reboot
 
 This gives a basic configuration ready to install Kubernetes on
@@ -105,6 +112,17 @@ This gives a basic configuration ready to install Kubernetes on
 This is now a complete base image which can be used for control and worker nodes.  To save time, make an image copy to all of your SD cards.
 Don't forget to change IP addresses and host names !
 
+### Sort out ip tables
+
+A problem exists with Raspbian Buster and iptables, which is now based on nftables.  Unfortunately Kubernetes doesn't get on
+with this change so we have to revert to iptables.
+
+```
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy 
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy 
+sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy
+```
+
 ## Install Kubernetes Master Node
 
 Select the machine you are going to use as the master node
@@ -113,7 +131,7 @@ Select the machine you are going to use as the master node
 
 ```kubeadm config images pull```
 
-* Install
+* Install (flannel)
 ```
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
@@ -139,19 +157,10 @@ kubeadm token create <token printed from previous command> --print-join-command 
 
 ## Configure Networking
 
-Most guides use [Flannel](https://github.com/coreos/flannel) as the networking layer. However, I found it impossible to get it working so used [Weave](https://github.com/weaveworks/weave) instead.
-
-* Install networking
-```
-sudo sysctl net.bridge.bridge-nf-call-iptables=1
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-```
-
-## Flannel
+Most guides use [Flannel](https://github.com/coreos/flannel) as the networking layer.
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-sudo sysctl net.bridge.bridge-nf-call-iptables=1
 ```
 
 * Show system to confirm install
@@ -176,10 +185,6 @@ sudo kubeadm join 172.16.1.210:6443 --token <token here>  --discovery-token-ca-c
 * On the master node, execute `kubectl get nodes` to show the complete cluster
 
 The cluster is now complete
-
-# *** Here be Dragons ! ***
-# *** Everything Past Here is Untested ***
-
 
 ## Publish a Basic Test Service
 
@@ -206,6 +211,11 @@ curl <IP address of an endpoint (Not a worker node IP address)>
   </body>
 </html>
 ```
+
+# *** Here be Dragons ! ***
+# *** Everything Past Here is Untested ***
+
+
 
 ### Deploy a Loader Balancer and Ingress Point
 
